@@ -1,53 +1,64 @@
 import {
-  Alert,
+  Image,
   Text,
+  TouchableOpacity,
   View,
   StyleSheet,
-  Platform,
-  TouchableOpacity,
-  FlatList,
+  ImageSourcePropType,
 } from 'react-native';
-import { useCartStore } from '../stores/cart-store';
-import { StatusBar } from 'expo-status-bar';
-import CartItem from '../components/cart-item';
 
-export default function CartPage() {
-  const { items, incrementItem, decrementItem, getTotalPrice, removeItem } =
-    useCartStore();
+type CartItemType = {
+  id: number;
+  title: string;
+  image: string;
+  price: number;
+  quantity: number;
+  maxQuantity?: number;
+};
 
-  const handleCheckout = () => {
-    Alert.alert('Proceeding to checkout', `Total amount: $${getTotalPrice()}`);
-  };
+type CartItemProps = {
+  item: CartItemType;
+  onRemove: (id: number) => void;
+  onIncrement: (id: number) => void;
+  onDecrement: (id: number) => void;
+};
 
-  console.log(items);
-
+export default function CartItem({
+  item,
+  onDecrement,
+  onIncrement,
+  onRemove,
+}: CartItemProps) {
+  const IMAGE = item.image as ImageSourcePropType;
   return (
-    <View style={styles.container}>
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-
-      <FlatList
-        data={items}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <CartItem
-            item={item}
-            onIncrement={incrementItem}
-            onDecrement={decrementItem}
-            onRemove={removeItem}
-          />
-        )}
-        contentContainerStyle={styles.cartList}
-      />
-
-      <View style={styles.footer}>
-        <Text style={styles.totalText}>Total: ${getTotalPrice()}</Text>
-        <TouchableOpacity
-          style={styles.checkoutButton}
-          onPress={handleCheckout}
-        >
-          <Text style={styles.checkoutButtonText}>Checkout</Text>
-        </TouchableOpacity>
+    <View style={styles.cartItem}>
+      <Image source={IMAGE} style={styles.itemImage} />
+      <View style={styles.itemDetails}>
+        <Text style={styles.itemTitle}>{item.title}</Text>
+        <Text style={styles.itemPrice}>${item.price.toFixed(2)}</Text>
+        <View style={styles.quantityContainer}>
+          <TouchableOpacity
+            onPress={() => onDecrement(item.id)}
+            style={styles.quantityButton}
+          >
+            <Text style={styles.quantityButtonText}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.itemQuantity}>{item.quantity}</Text>
+          <TouchableOpacity
+            onPress={() => onIncrement(item.id)}
+            style={styles.quantityButton}
+          >
+            <Text style={styles.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
+      <TouchableOpacity
+        onPress={() => onRemove(item.id)}
+        style={styles.removeButton}
+      >
+        <Text style={styles.removeButtonText}>Remove</Text>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -10,8 +10,10 @@ import {
 } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { CATEGORIES } from '../assets/categories';
+import { useCartStore } from '../stores/cart-store';
 
 export const ListHeader = () => {
+  const { getItemsCount } = useCartStore();
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerTop}>
@@ -37,7 +39,7 @@ export const ListHeader = () => {
                   />
 
                   <View style={styles.badgeContainer}>
-                    <Text style={styles.badgeText}>{1}</Text>
+                    <Text style={styles.badgeText}>{getItemsCount()}</Text>
                   </View>
                 </View>
               )}
@@ -71,7 +73,7 @@ export const ListHeader = () => {
           )}
           keyExtractor={(item) => item.name}
           horizontal
-          showsHorizontalScrollIndicator={false}
+          showsHorizontalScrollIndicator={true}
         />
       </View>
     </View>
